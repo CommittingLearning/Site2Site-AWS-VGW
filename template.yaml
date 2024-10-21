@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "VPN Gateway Template for Site-to-Site VPN"
+
+Parameters:
+  VPCID:
+    Type: String
+    Description: "The VPC ID to which the VGW will attach"
+
+  CustomerGatewayIP:
+    Type: String
+    Description: "The IP address of the Customer Gateway (Azure VPN Gateway)"
+    Default: "1.1.1.1"
+
+  PrivateSubnetCIDR:
+    Type: String
+    Description: "The CIDR block of the private subnet where the EC2 instance resides"
+    Default: "192.168.1.0/24"
+
+  Environment:
+    Type: String
+    Description: The environment name (e.g., development, production)
+    AllowedValues:
+      - development
+      - production
+      - default
+
+Resources:
+  # Create a VPN Gateway (VGW)
+  VGW:
+    Type: AWS::EC2::VPNGateway
+    Properties:
+      Type: "ipsec.1"
+      AmazonSideAsn: 10
+
+  # Attach VGW to VPC
+  VGWAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VpcId
+      VpnGatewayId: !Ref VGW
+
+  # Define the Customer Gateway (Azure VPN Gateway)
+  CustomerGateway:
+    Type: AWS::EC2::CustomerGateway
+    Properties:
+      IpAddress: !Ref CustomerGatewayIP
+      Type: "ipsec.1"
+      BgpAsn: 20
+      Tags:
+        - Key: Name 
+          Value: !Sub 'AzureVPN_${Environment}'
+
+  # Create the VPN connection between the VGW and Customer Gateway
+  VPNConnection:
+    Type: AWS::EC2::VPNConnection
+    Properties:
+      CustomerGatewayId: !Ref CustomerGateway
+      Type: "ipsec.1"
+      VpnGatewayId: !Ref VGW
+      StaticRoutesOnly: false
+      Tags:
+        - Key: Name
+          Value: !Sub 'S2SVPN_${Environment}'
+
+  VPNConnectionRoute:
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties:
+      DestinationCidrBlock: !Ref PrivateSubnetCIDR
+      VpnConnectionId: !Ref VPNConnection
+
+Outputs:
+  VGWId:
+    Description: "The ID of the created VPN Gateway"
+    Value: !Ref VGW
+
+  VpnConnectionId:
+    Description: "The ID od the VPN Connection"
+    Value: !Ref VPNConnection
