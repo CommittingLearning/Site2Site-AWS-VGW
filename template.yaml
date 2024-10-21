@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "VPN Gateway Template for Site-to-Site VPN"
 
 Parameters:
-  VPCID:
+  VPCId:
     Type: String
     Description: "The VPC ID to which the VGW will attach"
 
