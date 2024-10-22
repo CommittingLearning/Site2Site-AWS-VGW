@@ -77,7 +77,3 @@ Outputs:
   VGWId:
     Description: "The ID of the created VPN Gateway"
     Value: !Ref VGW
-
-  VpnConnectionId:
-    Description: "The ID od the VPN Connection"
-    Value: !Ref VPNConnection
