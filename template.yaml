@@ -6,6 +6,10 @@ Parameters:
     Type: String
     Description: "The VPC ID to which the VGW will attach"
 
+  SubnetId:
+    Type: String
+    Description: "The subnet ID to which the route table will attach"
+
   CustomerGatewayIP:
     Type: String
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway)"
@@ -36,7 +40,7 @@ Resources:
   VGWAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPCId
       VpnGatewayId: !Ref VGW
 
   # Define the Customer Gateway (Azure VPN Gateway)
@@ -67,6 +71,30 @@ Resources:
     Properties:
       DestinationCidrBlock: !Ref PrivateSubnetCIDR
       VpnConnectionId: !Ref VPNConnection
+
+  # Create a Route Table for the Subnet
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCId
+      Tags:
+        - Key: Name
+          Value: !Sub 'RouteTable_${Environment}'
+
+  # Add a Route to the VPN Gateway
+  RouteToVGW:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref VGW
+
+  # Associate Route Table to the EC2 Subnet
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetId
+      RouteTableId: !Ref RouteTable
 
 Outputs:
   VGWId:
