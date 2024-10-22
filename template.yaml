@@ -34,7 +34,7 @@ Resources:
     Type: AWS::EC2::VPNGateway
     Properties:
       Type: "ipsec.1"
-      AmazonSideAsn: 10
+      AmazonSideAsn: 65001
 
   # Attach VGW to VPC
   VGWAttachment:
@@ -42,29 +42,6 @@ Resources:
     Properties:
       VpcId: !Ref VPCId
       VpnGatewayId: !Ref VGW
-
-  # Define the Customer Gateway (Azure VPN Gateway)
-  CustomerGateway:
-    Type: AWS::EC2::CustomerGateway
-    Properties:
-      IpAddress: !Ref CustomerGatewayIP
-      Type: "ipsec.1"
-      BgpAsn: 20
-      Tags:
-        - Key: Name 
-          Value: !Sub 'AzureVPN_${Environment}'
-
-  # Create the VPN connection between the VGW and Customer Gateway
-  VPNConnection:
-    Type: AWS::EC2::VPNConnection
-    Properties:
-      CustomerGatewayId: !Ref CustomerGateway
-      Type: "ipsec.1"
-      VpnGatewayId: !Ref VGW
-      StaticRoutesOnly: false
-      Tags:
-        - Key: Name
-          Value: !Sub 'S2SVPN_${Environment}'
 
   VPNConnectionRoute:
     Type: AWS::EC2::VPNConnectionRoute
