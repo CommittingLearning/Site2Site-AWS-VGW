@@ -35,6 +35,9 @@ Resources:
     Properties:
       Type: "ipsec.1"
       AmazonSideAsn: 65001
+      Tags:
+        - Key: Name
+          Value: !Sub 'VGW_${Environment}'
 
   # Attach VGW to VPC
   VGWAttachment:
@@ -59,6 +62,7 @@ Resources:
       RouteTableId: !Ref RouteTable
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref VGW
+    DependsOn: VGWAttachment
 
   # Associate Route Table to the EC2 Subnet
   SubnetRouteTableAssociation:
