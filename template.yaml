@@ -18,7 +18,7 @@ Parameters:
   PrivateSubnetCIDR:
     Type: String
     Description: "The CIDR block of the private subnet where the EC2 instance resides"
-    Default: "192.168.1.0/24"
+    Default: "10.0.2.0/24"
 
   Environment:
     Type: String
