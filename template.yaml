@@ -15,7 +15,7 @@ Parameters:
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway)"
     Default: "1.1.1.1"
 
-  AzureCIDRCIDR:
+  AzureCIDR:
     Type: String
     Description: "The CIDR block of the Azure Vnet"
     Default: "10.0.0.0/16"
