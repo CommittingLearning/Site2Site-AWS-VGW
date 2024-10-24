@@ -10,18 +10,6 @@ Parameters:
     Type: String
     Description: "The subnet ID to which the route table will attach"
 
-  VPCEndpointSSMId:
-    Type: String
-    Description: "The ID of the VPC Endpoint for SSM"
-
-  VPCEndpointSSMMessagesID:
-    Type: String
-    Description: "The ID of the VPC Endpoint for SSM Messages"
-
-  VPCEndpointEC2MessagesID:
-    Type: String
-    Description: "The ID of the VPC Endpoint for EC2 Messages"
-
   CustomerGatewayIP:
     Type: String
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway)"
