@@ -22,11 +22,16 @@ Parameters:
 
   Environment:
     Type: String
-    Description: The environment name (e.g., development, production)
+    Description: "The environment name (e.g., development, production)"
     AllowedValues:
       - development
       - production
       - default
+
+  PreSharedKey:
+    Type: String
+    Description: "The PSK used to establish the VPN connection"
+    NoEcho: true
 
 Resources:
   # Create a VPN Gateway (VGW)
@@ -45,6 +50,38 @@ Resources:
     Properties:
       VpcId: !Ref VPCId
       VpnGatewayId: !Ref VGW
+
+  # Define the Customer Gateway (Azure VPN Gateway)
+  CustomerGateway:
+    Type: AWS::EC2::CustomerGateway
+    Properties:
+      IpAddress: !Ref CustomerGatewayIP
+      Type: "ipsec.1"
+      BgpAsn: 65002
+      Tags:
+        - Key: Name 
+          Value: !Sub 'AzureVPN_${Environment}'
+
+  # Create the VPN connection between the VGW and Customer Gateway
+  VPNConnection:
+    Type: AWS::EC2::VPNConnection
+    Properties:
+      CustomerGatewayId: !Ref CustomerGateway
+      Type: "ipsec.1"
+      VpnGatewayId: !Ref VGW
+      StaticRoutesOnly: false
+      Tags:
+        - Key: Name
+          Value: !Sub 'S2SVPN_${Environment}'
+      VpnTunnelOptionsSpecifications:
+        - PreSharedKey: !Ref PreSharedKey
+ 
+  # Configure the 
+  VPNConnectionRoute:
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties:
+      DestinationCidrBlock: !Ref PrivateSubnetCIDR
+      VpnConnectionId: !Ref VPNConnection
 
   # Create a Route Table for the Subnet
   RouteTable:
