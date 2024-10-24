@@ -15,10 +15,10 @@ Parameters:
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway)"
     Default: "1.1.1.1"
 
-  PrivateSubnetCIDR:
+  AzureCIDRCIDR:
     Type: String
-    Description: "The CIDR block of the private subnet where the EC2 instance resides"
-    Default: "10.0.2.0/24"
+    Description: "The CIDR block of the Azure Vnet"
+    Default: "10.0.0.0/16"
 
   Environment:
     Type: String
@@ -75,13 +75,15 @@ Resources:
           Value: !Sub 'S2SVPN_${Environment}'
       VpnTunnelOptionsSpecifications:
         - PreSharedKey: !Ref PreSharedKey
+    DependsOn: CustomerGateway
  
   # Configure the 
   VPNConnectionRoute:
     Type: AWS::EC2::VPNConnectionRoute
     Properties:
-      DestinationCidrBlock: !Ref PrivateSubnetCIDR
+      DestinationCidrBlock: !Ref AzureCIDR
       VpnConnectionId: !Ref VPNConnection
+    DependsOn: VPNConnection
 
   # Create a Route Table for the Subnet
   RouteTable:
