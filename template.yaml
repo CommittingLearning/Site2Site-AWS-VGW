@@ -76,14 +76,6 @@ Resources:
       VpnTunnelOptionsSpecifications:
         - PreSharedKey: !Ref PreSharedKey
     DependsOn: CustomerGateway
- 
-  # Configure the 
-  VPNConnectionRoute:
-    Type: AWS::EC2::VPNConnectionRoute
-    Properties:
-      DestinationCidrBlock: !Ref AzureCIDR
-      VpnConnectionId: !Ref VPNConnection
-    DependsOn: VPNConnection
 
   # Create a Route Table for the Subnet
   RouteTable:
