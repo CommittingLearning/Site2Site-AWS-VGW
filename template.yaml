@@ -90,6 +90,7 @@ Resources:
           Value: !Sub 'S2SVPN1_${Environment}'
       VpnTunnelOptionsSpecifications:
         - PreSharedKey: !Ref PreSharedKey
+          TunnelInsideCidr: "169.254.21.0/30"
     DependsOn: CustomerGateway1
 
   VPNConnection2:
@@ -104,6 +105,7 @@ Resources:
           Value: !Sub 'S2SVPN2_${Environment}'
       VpnTunnelOptionsSpecifications:
         - PreSharedKey: !Ref PreSharedKey
+          TunnelInsideCidr: "169.254.22.0/30"
     DependsOn: CustomerGateway2
 
   # Create a Route Table for the Subnet
