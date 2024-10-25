@@ -72,7 +72,7 @@ Resources:
       StaticRoutesOnly: false
       Tags:
         - Key: Name
-          Value: !Sub 'S2SVPN1_${Environment}'
+          Value: !Sub 'S2SVPN_${Environment}'
       VpnTunnelOptionsSpecifications:
         - PreSharedKey: !Ref PreSharedKey
           TunnelInsideCidr: "169.254.21.0/30"
