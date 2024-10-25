@@ -13,7 +13,7 @@ Parameters:
   CustomerGatewayIP:
     Type: String
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway 1)"
-    Default: "172.178.138.54"
+    Default: "40.78.110.136"
 
   AzureCIDR:
     Type: String
@@ -63,7 +63,7 @@ Resources:
           Value: !Sub 'AzureVPN_${Environment}'
 
   # Create the VPN connection between the VGW and Customer Gateway
-  VPNConnection1:
+  VPNConnection:
     Type: AWS::EC2::VPNConnection
     Properties:
       CustomerGatewayId: !Ref CustomerGateway
