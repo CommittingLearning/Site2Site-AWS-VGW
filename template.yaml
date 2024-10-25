@@ -10,15 +10,10 @@ Parameters:
     Type: String
     Description: "The subnet ID to which the route table will attach"
 
-  CustomerGatewayIP1:
+  CustomerGatewayIP:
     Type: String
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway 1)"
     Default: "172.178.138.54"
-
-  CustomerGatewayIP2:
-    Type: String
-    Description: "The IP address of the Customer Gateway (Azure VPN Gateway 1)"
-    Default: "172.178.138.60"
 
   AzureCIDR:
     Type: String
@@ -57,31 +52,21 @@ Resources:
       VpnGatewayId: !Ref VGW
 
   # Define the Customer Gateway (Azure VPN Gateway)
-  CustomerGateway1:
+  CustomerGateway:
     Type: AWS::EC2::CustomerGateway
     Properties:
-      IpAddress: !Ref CustomerGatewayIP1
+      IpAddress: !Ref CustomerGatewayIP
       Type: "ipsec.1"
       BgpAsn: 65002
       Tags:
         - Key: Name 
-          Value: !Sub 'AzureVPN1_${Environment}'
-
-  CustomerGateway2:
-    Type: AWS::EC2::CustomerGateway
-    Properties:
-      IpAddress: !Ref CustomerGatewayIP2
-      Type: "ipsec.1"
-      BgpAsn: 65002
-      Tags:
-        - Key: Name 
-          Value: !Sub 'AzureVPN2_${Environment}'
+          Value: !Sub 'AzureVPN_${Environment}'
 
   # Create the VPN connection between the VGW and Customer Gateway
   VPNConnection1:
     Type: AWS::EC2::VPNConnection
     Properties:
-      CustomerGatewayId: !Ref CustomerGateway1
+      CustomerGatewayId: !Ref CustomerGateway
       Type: "ipsec.1"
       VpnGatewayId: !Ref VGW
       StaticRoutesOnly: false
@@ -91,22 +76,9 @@ Resources:
       VpnTunnelOptionsSpecifications:
         - PreSharedKey: !Ref PreSharedKey
           TunnelInsideCidr: "169.254.21.0/30"
-    DependsOn: CustomerGateway1
-
-  VPNConnection2:
-    Type: AWS::EC2::VPNConnection
-    Properties:
-      CustomerGatewayId: !Ref CustomerGateway2
-      Type: "ipsec.1"
-      VpnGatewayId: !Ref VGW
-      StaticRoutesOnly: false
-      Tags:
-        - Key: Name
-          Value: !Sub 'S2SVPN2_${Environment}'
-      VpnTunnelOptionsSpecifications:
         - PreSharedKey: !Ref PreSharedKey
           TunnelInsideCidr: "169.254.22.0/30"
-    DependsOn: CustomerGateway2
+    DependsOn: CustomerGateway
 
   # Create a Route Table for the Subnet
   RouteTable:
