@@ -13,7 +13,7 @@ Parameters:
   CustomerGatewayIP:
     Type: String
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway)"
-    Default: "1.1.1.1"
+    Default: "13.64.244.167"
 
   AzureCIDR:
     Type: String
@@ -75,6 +75,9 @@ Resources:
           Value: !Sub 'S2SVPN_${Environment}'
       VpnTunnelOptionsSpecifications:
         - PreSharedKey: !Ref PreSharedKey
+          TunnelInsideCidr: "169.254.167.60/30"
+        - PreSharedKey: !Ref PreSharedKey
+          TunnelInsideCidr: "169.254.78.236/30"
     DependsOn: CustomerGateway
 
   # Create a Route Table for the Subnet
