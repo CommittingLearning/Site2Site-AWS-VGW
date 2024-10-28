@@ -89,16 +89,14 @@ Resources:
         - Key: Name
           Value: !Sub 'RouteTable_${Environment}'
 
-  # Propogate Routes from VGW to the Route Table
-  VGWRoutePropagation:
-    Type: AWS::EC2::VPNGatewayRoutePropagation
+  # Add a Route to the VPN Gateway
+  RouteToVGW:
+    Type: AWS::EC2::Route
     Properties:
-      RouteTableIds: 
-        - !Ref RouteTable
-      VpnGatewayId: !Ref VGW
-    DependsOn:
-      - RouteTable
-      - VGW
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref VGW
+    DependsOn: VGWAttachment
 
   # Associate Route Table to the EC2 Subnet
   SubnetRouteTableAssociation:
@@ -108,6 +106,14 @@ Resources:
       RouteTableId: !Ref RouteTable
     DependsOn: RouteTable
 
+  # Propogate Routes from VGW to the Route Table
+  VGWRoutePropagation:
+    Type: AWS::EC2::VPNGatewayRoutePropagation
+    Properties:
+      RouteTableIds: 
+        - !Ref RouteTable
+      VpnGatewayId: !Ref VGW
+    DependsOn: VGWAttachment
 Outputs:
   VGWId:
     Description: "The ID of the created VPN Gateway"
