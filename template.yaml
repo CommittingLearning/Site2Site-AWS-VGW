@@ -13,7 +13,7 @@ Parameters:
   CustomerGatewayIP:
     Type: String
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway 1)"
-    Default: "40.78.110.136"
+    Default: "40.83.221.220"
 
   AzureCIDR:
     Type: String
@@ -99,12 +99,15 @@ Resources:
     DependsOn: VGWAttachment
 
   # Propogate Routes from VGW to the Route Table
-  VGWRoutePropogation:
+  VGWRoutePropagation:
     Type: AWS::EC2::VPNGatewayRoutePropagation
     Properties:
       RouteTableIds: 
         - !Ref RouteTable
       VpnGatewayId: !Ref VGW
+    DependsOn:
+      - RouteTable
+      - VGW
 
   # Associate Route Table to the EC2 Subnet
   SubnetRouteTableAssociation:
@@ -112,6 +115,7 @@ Resources:
     Properties:
       SubnetId: !Ref SubnetId
       RouteTableId: !Ref RouteTable
+    DependsOn: RouteTable
 
 Outputs:
   VGWId:
