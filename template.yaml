@@ -98,17 +98,6 @@ Resources:
       GatewayId: !Ref VGW
     DependsOn: VGWAttachment
 
-  # Propogate Routes from VGW to the Route Table
-  VGWRoutePropagation:
-    Type: AWS::EC2::VPNGatewayRoutePropagation
-    Properties:
-      RouteTableIds: 
-        - !Ref RouteTable
-      VpnGatewayId: !Ref VGW
-    DependsOn:
-      - RouteTable
-      - VGW
-
   # Associate Route Table to the EC2 Subnet
   SubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -116,6 +105,15 @@ Resources:
       SubnetId: !Ref SubnetId
       RouteTableId: !Ref RouteTable
     DependsOn: RouteTable
+
+  # Propogate Routes from VGW to the Route Table
+  VGWRoutePropagation:
+    Type: AWS::EC2::VPNGatewayRoutePropagation
+    Properties:
+      RouteTableIds: 
+        - !Ref RouteTable
+      VpnGatewayId: !Ref VGW
+    DependsOn: SubnetRouteTableAssociation
 
 Outputs:
   VGWId:
