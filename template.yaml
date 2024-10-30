@@ -89,15 +89,6 @@ Resources:
         - Key: Name
           Value: !Sub 'RouteTable_${Environment}'
 
-  # Add a Route to the VPN Gateway
-  RouteToVGW:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref RouteTable
-      DestinationCidrBlock: '0.0.0.0/0'
-      GatewayId: !Ref VGW
-    DependsOn: VGWAttachment
-
   # Associate Route Table to the EC2 Subnet
   SubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
