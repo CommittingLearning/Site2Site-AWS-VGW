@@ -96,7 +96,7 @@ jobs:
         run: |
           aws s3 cp template.yaml ${{ env.S3_BUCKET }}VGW-${{ env.ENVIRONMENT }}-template.yaml
 
-      # Trigger Parent Stack Deployment via Webhooks
+      # Trigger Parent Stack Deployment
       - name: Trigger Parent Stack Deployment
         run: |
           curl -X POST \
