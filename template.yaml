@@ -13,12 +13,7 @@ Parameters:
   CustomerGatewayIP:
     Type: String
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway 1)"
-    Default: "40.78.125.137"
-
-  AzureCIDR:
-    Type: String
-    Description: "The CIDR block of the Azure Vnet"
-    Default: "10.0.0.0/16"
+    Default: "13.91.89.165"
 
   Environment:
     Type: String

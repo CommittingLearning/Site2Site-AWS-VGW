@@ -54,7 +54,7 @@ The CloudFormation template (`template.yaml`) provisions the following resources
 
 3. **Customer Gateway (`CustomerGateway`):**
 
-   - **IP Address:** Defined by `CustomerGatewayIP` parameter (default is `168.62.22.228`)
+   - **IP Address:** Defined by `CustomerGatewayIP` parameter
    - **Type:** `ipsec.1`
    - **BGP ASN:** `65002`
    - **Tags:** Includes `Name` with value `AzureVPN_{Environment}`
