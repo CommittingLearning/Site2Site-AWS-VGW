@@ -13,7 +13,7 @@ Parameters:
   CustomerGatewayIP:
     Type: String
     Description: "The IP address of the Customer Gateway (Azure VPN Gateway 1)"
-    Default: "13.91.89.165"
+    Default: "104.209.4.250"
 
   Environment:
     Type: String
