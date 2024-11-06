@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "VPN Gateway Template for Site-to-Site VPN"
+
+Parameters:
+  VPCId:
+    Type: String
+    Description: "The VPC ID to which the VGW will attach"
+
+  SubnetId:
+    Type: String
+    Description: "The subnet ID to which the route table will attach"
+
+  CustomerGatewayIP:
+    Type: String
+    Description: "The IP address of the Customer Gateway (Azure VPN Gateway 1)"
+    Default: "52.225.16.99"
+
+  Environment:
+    Type: String
+    Description: "The environment name (e.g., development, production)"
+    AllowedValues:
+      - development
+      - production
+      - default
+
+  PreSharedKey:
+    Type: String
+    Description: "The PSK used to establish the VPN connection"
+    NoEcho: true
+
+Resources:
+  # Create a VPN Gateway (VGW)
+  VGW:
+    Type: AWS::EC2::VPNGateway
+    Properties:
+      Type: "ipsec.1"
+      AmazonSideAsn: 65001
+      Tags:
+        - Key: Name
+          Value: !Sub 'VGW_${Environment}'
+
+  # Attach VGW to VPC
+  VGWAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPCId
+      VpnGatewayId: !Ref VGW
+
+  # Define the Customer Gateway (Azure VPN Gateway)
+  CustomerGateway:
+    Type: AWS::EC2::CustomerGateway
+    Properties:
+      IpAddress: !Ref CustomerGatewayIP
+      Type: "ipsec.1"
+      BgpAsn: 65002
+      Tags:
+        - Key: Name 
+          Value: !Sub 'AzureVPN_${Environment}'
+
+  # Create the VPN connection between the VGW and Customer Gateway
+  VPNConnection:
+    Type: AWS::EC2::VPNConnection
+    Properties:
+      CustomerGatewayId: !Ref CustomerGateway
+      Type: "ipsec.1"
+      VpnGatewayId: !Ref VGW
+      StaticRoutesOnly: false
+      Tags:
+        - Key: Name
+          Value: !Sub 'S2SVPN_${Environment}'
+      VpnTunnelOptionsSpecifications:
+        - PreSharedKey: !Ref PreSharedKey
+          TunnelInsideCidr: "169.254.21.0/30"
+        - PreSharedKey: !Ref PreSharedKey
+          TunnelInsideCidr: "169.254.22.0/30"
+    DependsOn: CustomerGateway
+
+  # Create a Route Table for the Subnet
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCId
+      Tags:
+        - Key: Name
+          Value: !Sub 'RouteTable_${Environment}'
+
+  # Associate Route Table to the EC2 Subnet
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetId
+      RouteTableId: !Ref RouteTable
+    DependsOn: RouteTable
+
+  # Propogate Routes from VGW to the Route Table
+  VGWRoutePropagation:
+    Type: AWS::EC2::VPNGatewayRoutePropagation
+    Properties:
+      RouteTableIds: 
+        - !Ref RouteTable
+      VpnGatewayId: !Ref VGW
+    DependsOn: VGWAttachment
+Outputs:
+  VGWId:
+    Description: "The ID of the created VPN Gateway"
+    Value: !Ref VGW
